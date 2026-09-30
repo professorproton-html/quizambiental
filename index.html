@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz: "O Custo do Progresso"</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #162033;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e6e8ed;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #15803d;
+      --success-bg: #ecfdf3;
+      --danger: #b42318;
+      --danger-bg: #fef3f2;
+      --gold: #b7791f;
+      --gold-bg: #fffbeb;
+      --shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.18), transparent 26%),
+        linear-gradient(145deg, #0b1120 0%, #111827 55%, #172033 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px;
+    }
+
+    button, input { font: inherit; }
+
+    .app {
+      width: min(980px, 100%);
+    }
+
+    .screen { display: none; }
+    .screen.active {
+      display: block;
+      animation: fade-in .25s ease;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Abertura */
+    .intro {
+      padding: 54px 46px;
+      text-align: center;
+    }
+
+    .intro-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 22px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 1.6rem;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .intro h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.35rem);
+      letter-spacing: -.035em;
+    }
+
+    .intro p {
+      max-width: 680px;
+      margin: 18px auto 28px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .intro-meta {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .meta-item {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #475467;
+      background: #f8fafc;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    .name-row {
+      width: min(520px, 100%);
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .name-row input {
+      flex: 1;
+      min-width: 0;
+      height: 50px;
+      padding: 0 15px;
+      border: 1px solid #d0d5dd;
+      border-radius: 10px;
+      outline: none;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .name-row input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+    }
+
+    .btn {
+      height: 50px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .20);
+    }
+
+    .btn-primary:hover { background: var(--primary-dark); }
+
+    .btn-secondary {
+      color: #344054;
+      background: #f2f4f7;
+      border: 1px solid #e4e7ec;
+    }
+
+    /* Quiz */
+    .quiz-card { overflow: hidden; }
+
+    .quiz-header {
+      padding: 22px 26px 18px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .quiz-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      color: #475467;
+      font-size: .92rem;
+      font-weight: 800;
+    }
+
+    .score-box {
+      padding: 7px 11px;
+      border-radius: 8px;
+      background: #f2f4f7;
+      color: #344054;
+      white-space: nowrap;
+    }
+
+    .progress {
+      height: 6px;
+      margin-top: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #eef2f6;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--primary);
+      transition: width .3s ease;
+    }
+
+    .question-area {
+      padding: 32px 26px 24px;
+      background: #fff;
+    }
+
+    .question-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 13px;
+      padding: 6px 9px;
+      border: 1px solid #e4e7ec;
+      border-radius: 8px;
+      color: #475467;
+      background: #f8fafc;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .question-label.challenge {
+      color: var(--gold);
+      border-color: #f5df9e;
+      background: var(--gold-bg);
+    }
+
+    .question {
+      max-width: 880px;
+      margin: 0 0 25px;
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      line-height: 1.45;
+      letter-spacing: -.02em;
+      white-space: pre-line;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .option {
+      min-height: 78px;
+      padding: 14px 15px;
+      border: 1px solid #dfe3e8;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, transform .16s ease;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .05);
+    }
+
+    .option:hover:not(:disabled) {
+      border-color: #9db7e9;
+      background: #f8fbff;
+      transform: translateY(-1px);
+    }
+
+    .option:disabled { cursor: default; }
+
+    .option-letter {
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #f2f4f7;
+      color: #475467;
+      font-weight: 900;
+      font-size: .88rem;
+    }
+
+    .option.correct {
+      border-color: #73c995;
+      background: var(--success-bg);
+    }
+
+    .option.correct .option-letter {
+      background: #d1fadf;
+      color: var(--success);
+    }
+
+    .option.wrong {
+      border-color: #f0a5a0;
+      background: var(--danger-bg);
+    }
+
+    .option.wrong .option-letter {
+      background: #fee4e2;
+      color: var(--danger);
+    }
+
+    .feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      line-height: 1.55;
+      font-size: .94rem;
+    }
+
+    .feedback.show {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .feedback.correct {
+      color: #126b35;
+      background: var(--success-bg);
+      border: 1px solid #b7ebc6;
+    }
+
+    .feedback.wrong {
+      color: #962d26;
+      background: var(--danger-bg);
+      border: 1px solid #f4c4c0;
+    }
+
+    .footer {
+      padding: 0 26px 26px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Resultado */
+    .result {
+      padding: 46px 36px;
+      text-align: center;
+    }
+
+    .result-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 18px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .result h2 {
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      letter-spacing: -.03em;
+    }
+
+    .final-score {
+      margin: 12px 0 2px;
+      font-size: clamp(3.8rem, 12vw, 6rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.06em;
+      color: #111827;
+    }
+
+    .result p {
+      max-width: 650px;
+      margin: 12px auto 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .stats {
+      max-width: 660px;
+      margin: 28px auto 24px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.35rem;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .review {
+      max-width: 660px;
+      margin: 0 auto;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .review-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .review-row:last-child { border-bottom: 0; }
+
+    .review-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+    }
+
+    .review-status.ok { color: var(--success); }
+    .review-status.no { color: var(--danger); }
+
+    .review-points {
+      color: #667085;
+      font-size: .88rem;
+      white-space: nowrap;
+    }
+
+    .actions {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .subtle {
+      margin-top: 15px;
+      color: #98a2b3;
+      font-size: .83rem;
+    }
+
+    @media (max-width: 720px) {
+      body { padding: 12px; }
+      .intro { padding: 38px 20px; }
+      .name-row { flex-direction: column; }
+      .options { grid-template-columns: 1fr; }
+      .quiz-header, .question-area, .footer { padding-left: 18px; padding-right: 18px; }
+      .stats { grid-template-columns: 1fr; }
+      .result { padding: 36px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <!-- Abertura -->
+    <section id="startScreen" class="screen active">
+      <div class="panel intro">
+        <div class="intro-icon"><i class="fa-solid fa-leaf" aria-hidden="true"></i></div>
+        <div class="eyebrow">5 perguntas sobre a maquete</div>
+        <h1>Quiz: "O Custo do Progresso"</h1>
+        <p>
+          Observe a maquete com atenção e responda às perguntas.
+          A ideia é pensar no que acontece com uma cidade quando o desenvolvimento não leva o ambiente em conta.
+        </p>
+
+        <div class="intro-meta">
+          <span class="meta-item"><i class="fa-solid fa-list-check" aria-hidden="true"></i> 5 questões</span>
+          <span class="meta-item"><i class="fa-solid fa-star" aria-hidden="true"></i> 6 pontos</span>
+          <span class="meta-item"><i class="fa-solid fa-bullseye" aria-hidden="true"></i> 1 questão vale 2 pontos</span>
+        </div>
+
+        <div class="name-row">
+          <input id="playerName" maxlength="30" placeholder="Seu nome (opcional)" autocomplete="off" />
+          <button class="btn btn-primary" id="startBtn">
+            <i class="fa-solid fa-play" aria-hidden="true"></i>
+            Iniciar quiz
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quizScreen" class="screen">
+      <div class="panel quiz-card">
+        <header class="quiz-header">
+          <div class="quiz-header-row">
+            <span id="questionCounter">Questão 1 de 5</span>
+            <span class="score-box" id="liveScore">0/6 pontos</span>
+          </div>
+          <div class="progress" aria-label="Progresso do quiz">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </header>
+
+        <div class="question-area">
+          <div id="difficultyBadge" class="question-label">
+            <i class="fa-solid fa-star" aria-hidden="true"></i>
+            <span>1 ponto</span>
+          </div>
+
+          <h2 class="question" id="questionText"></h2>
+          <div class="options" id="optionsContainer"></div>
+          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="footer">
+          <button class="btn btn-primary" id="nextBtn" style="display:none;"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultado -->
+    <section id="resultScreen" class="screen">
+      <div class="panel result">
+        <div class="result-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></div>
+        <h2 id="resultTitle">Resultado</h2>
+        <div class="final-score" id="finalScore">0/6</div>
+        <p id="resultMessage"></p>
+
+        <div class="stats">
+          <div class="stat">
+            <strong id="correctCount">0/5</strong>
+            <span>questões corretas</span>
+          </div>
+          <div class="stat">
+            <strong>6</strong>
+            <span>pontuação máxima</span>
+          </div>
+        </div>
+
+        <div class="review" id="review"></div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="restartBtn">
+            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
+            Jogar novamente
+          </button>
+        </div>
+
+        <div class="subtle" id="playerSummary"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        text: "Ao observarmos a maquete, podemos refletir sobre a degradação ambiental. Qual alternativa cita corretamente dois custos desse processo?",
+        options: [
+          "Poluição e aumento da biodiversidade",
+          "Poluição e perda da biodiversidade",
+          "Usinas nucleares e chuvas ácidas",
+          "Transformação da cidade em 'cidade fantasma' e melhora da qualidade do ar"
+        ],
+        answer: 1,
+        points: 1,
+        explanation: "A degradação ambiental pode provocar poluição e perda de biodiversidade, afetando o equilíbrio dos ecossistemas."
+      },
+      {
+        text: "Ao analisarmos a maquete, qual é um impacto da falta de biodiversidade em uma cidade?",
+        options: [
+          "Desequilibra o ecossistema da cidade e pode piorar a qualidade do ar.",
+          "Aumenta a quantidade de oxigênio e atrai novas espécies.",
+          "Reduz os custos com purificação da água e estabilização natural do clima.",
+          "Estimula a migração controlada de espécies nativas para áreas poluídas."
+        ],
+        answer: 0,
+        points: 1,
+        explanation: "A redução da biodiversidade pode desequilibrar os ecossistemas e prejudicar aspectos ambientais importantes, além de reduzir a capacidade local de atrair novas espécies."
+      },
+      {
+        text: "Dentre as opções abaixo, qual explica melhor uma das causas da poluição representada em nossa maquete?",
+        options: [
+          "Uso de combustíveis fósseis, atividades industriais e descarte incorreto de lixo.",
+          "Aumento de áreas verdes e captação de água da chuva.",
+          "Uso exclusivo de energia solar e carros elétricos na cidade.",
+          "Plantio de árvores nativas, reciclagem obrigatória e uso de energia nuclear."
+        ],
+        answer: 0,
+        points: 1,
+        explanation: "Combustíveis fósseis, atividades industriais e descarte inadequado de resíduos são, dentre as alternativas acima, as fontes mais viáveis de poluição."
+      },
+      {
+        text: `Observe os carros destruídos na maquete. A afirmação a seguir é verdadeira ou falsa?
+
+“Os carros destruídos são resultado apenas de ações da natureza, sem participação humana.”`,
+        options: [
+          "Verdadeiro",
+          "Falso"
+        ],
+        answer: 1,
+        points: 1,
+        explanation: "Falso. Os carros <strong>"destruídos"</strong> na maquete também representam consequências de problemas causados e agravados pela ação humana, principalmente o descarte inadequado."
+      },
+      {
+        text: "Ao analisarmos a maquete, vemos um rio poluído. Por que esse rio pode estar poluído dessa forma?",
+        options: [
+          "Devido exclusivamente à negligência de políticos corruptos.",
+          "Porque os peixes desejaram fazer uma 'festa da poluição'.",
+          "Devido à ausência de esgoto com alta conscientização popular.",
+          "Devido à falta de infraestrutura básica de saneamento e ao descarte inadequado de resíduos."
+        ],
+        answer: 3,
+        points: 2,
+        explanation: "A falta de saneamento e o descarte inadequado de resíduos podem contaminar rios e causar graves impactos ambientais."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let correctAnswers = 0;
+    let answered = false;
+    let playerName = "";
+    let history = [];
+
+    const $ = (id) => document.getElementById(id);
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+      $(id).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestion() {
+      answered = false;
+      const q = questions[currentQuestion];
+
+      $("questionCounter").textContent = `Questão ${currentQuestion + 1} de ${questions.length}`;
+      $("liveScore").textContent = `${score}/6 pontos`;
+      $("progressBar").style.width = `${((currentQuestion) / questions.length) * 100}%`;
+      $("questionText").textContent = q.text;
+      $("feedback").className = "feedback";
+      $("feedback").textContent = "";
+      $("nextBtn").style.display = "none";
+
+      const badge = $("difficultyBadge");
+      badge.classList.toggle("challenge", q.points === 2);
+      badge.innerHTML = q.points === 2
+        ? '<i class="fa-solid fa-crosshairs" aria-hidden="true"></i><span>Questão 5 · 2 pontos</span>'
+        : '<i class="fa-solid fa-star" aria-hidden="true"></i><span>1 ponto</span>';
+
+      const letters = ["A", "B", "C", "D"];
+      const container = $("optionsContainer");
+      container.innerHTML = "";
+
+      q.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.type = "button";
+        button.innerHTML = `
+          <span class="option-letter">${letters[index]}</span>
+          <span>${option}</span>
+        `;
+        button.addEventListener("click", () => chooseAnswer(index));
+        container.appendChild(button);
+      });
+    }
+
+    function chooseAnswer(index) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentQuestion];
+      const buttons = [...document.querySelectorAll('.option')];
+      buttons.forEach((button) => button.disabled = true);
+
+      const selected = buttons[index];
+      const correct = buttons[q.answer];
+      const isCorrect = index === q.answer;
+
+      correct.classList.add('correct');
+      if (!isCorrect) selected.classList.add('wrong');
+
+      if (isCorrect) {
+        score += q.points;
+        correctAnswers += 1;
+        history.push({ correct: true });
+        $("feedback").className = 'feedback correct show';
+        $("feedback").innerHTML = `
+          <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+          <div><strong>Acertou!</strong> +${q.points} ponto${q.points > 1 ? 's' : ''}</div>
+        `;
+      } else {
+        history.push({ correct: false });
+        $("feedback").className = 'feedback wrong show';
+        $("feedback").innerHTML = `
+          <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+          <div><strong>Essa não.</strong> A resposta certa é <strong>${q.options[q.answer]}</strong></div>
+        `;
+      }
+
+      $("liveScore").textContent = `${score}/6 pontos`;
+      $("progressBar").style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
+      $("nextBtn").style.display = 'inline-flex';
+      $("nextBtn").innerHTML = currentQuestion === questions.length - 1
+        ? '<i class="fa-solid fa-chart-column" aria-hidden="true"></i> Ver resultado'
+        : '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Próxima questão';
+    }
+
+    function finishQuiz() {
+      $("finalScore").textContent = `${score}/6`;
+      $("correctCount").textContent = `${correctAnswers}/5`;
+
+      let title = 'Resultado final';
+      let message = 'Veja quantos pontos você fez e confira as questões que respondeu.';
+
+      if (score === 6) {
+        title = 'Mandou bem!';
+        message = 'Você acertou tudo e gabaritou o quiz com 6/6 pontos.';
+      } else if (score >= 4) {
+        title = 'Bom trabalho!';
+        message = 'Você foi bem e acertou a maior parte das questões.';
+      } else if (score >= 2) {
+        title = 'Quiz concluído';
+        message = 'Você acertou uma parte das questões.';
+      }
+
+      $("resultTitle").textContent = title;
+      $("resultMessage").textContent = message;
+      $("playerSummary").textContent = playerName ? `Participante: ${playerName}` : '';
+
+      $("review").innerHTML = history.map((item, index) => {
+        const q = questions[index];
+        return `
+          <div class="review-row">
+            <span class="review-status ${item.correct ? 'ok' : 'no'}">
+              <i class="fa-solid ${item.correct ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
+              Questão ${index + 1}
+            </span>
+            <span class="review-points">${item.correct ? q.points : 0}/${q.points} ponto${q.points > 1 ? 's' : ''}</span>
+          </div>
+        `;
+      }).join('');
+
+      showScreen('resultScreen');
+    }
+
+    function startQuiz() {
+      playerName = $("playerName").value.trim();
+      currentQuestion = 0;
+      score = 0;
+      correctAnswers = 0;
+      history = [];
+      showScreen('quizScreen');
+      renderQuestion();
+    }
+
+    $("startBtn").addEventListener('click', startQuiz);
+    $("playerName").addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') startQuiz();
+    });
+
+    $("nextBtn").addEventListener('click', () => {
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion += 1;
+        renderQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    $("restartBtn").addEventListener('click', () => {
+      showScreen('startScreen');
+    });
+  </script>
+</body>
+</html>
