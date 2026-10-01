@@ -52,6 +52,7 @@
     }
 
     .screen { display: none; }
+
     .screen.active {
       display: block;
       animation: fade-in .25s ease;
@@ -380,6 +381,15 @@
       letter-spacing: -.03em;
     }
 
+    .winner-name {
+      margin: 10px 0 18px;
+      font-size: clamp(2.5rem, 10vw, 5.5rem);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -.05em;
+      color: var(--primary);
+    }
+
     .final-score {
       margin: 12px 0 2px;
       font-size: clamp(3.8rem, 12vw, 6rem);
@@ -479,33 +489,60 @@
       .intro { padding: 38px 20px; }
       .name-row { flex-direction: column; }
       .options { grid-template-columns: 1fr; }
-      .quiz-header, .question-area, .footer { padding-left: 18px; padding-right: 18px; }
+      .quiz-header, .question-area, .footer {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
       .stats { grid-template-columns: 1fr; }
       .result { padding: 36px 20px; }
     }
   </style>
 </head>
+
 <body>
   <main class="app">
+
     <!-- Abertura -->
     <section id="startScreen" class="screen active">
       <div class="panel intro">
-        <div class="intro-icon"><i class="fa-solid fa-leaf" aria-hidden="true"></i></div>
+        <div class="intro-icon">
+          <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+        </div>
+
         <div class="eyebrow">5 perguntas sobre a maquete</div>
+
         <h1>Quiz: "O Custo do Progresso"</h1>
+
         <p>
           Observe a maquete com atenção e responda às perguntas.
           A ideia é pensar no que acontece com uma cidade quando o desenvolvimento não leva o ambiente em conta.
         </p>
 
         <div class="intro-meta">
-          <span class="meta-item"><i class="fa-solid fa-list-check" aria-hidden="true"></i> 5 questões</span>
-          <span class="meta-item"><i class="fa-solid fa-star" aria-hidden="true"></i> 6 pontos</span>
-          <span class="meta-item"><i class="fa-solid fa-bullseye" aria-hidden="true"></i> 1 questão vale 2 pontos</span>
+          <span class="meta-item">
+            <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+            5 questões
+          </span>
+
+          <span class="meta-item">
+            <i class="fa-solid fa-star" aria-hidden="true"></i>
+            6 pontos
+          </span>
+
+          <span class="meta-item">
+            <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+            1 questão vale 2 pontos
+          </span>
         </div>
 
         <div class="name-row">
-          <input id="playerName" maxlength="30" placeholder="Seu nome (opcional)" autocomplete="off" />
+          <input
+            id="playerName"
+            maxlength="30"
+            placeholder="Seu nome (opcional)"
+            autocomplete="off"
+          />
+
           <button class="btn btn-primary" id="startBtn">
             <i class="fa-solid fa-play" aria-hidden="true"></i>
             Iniciar quiz
@@ -517,11 +554,13 @@
     <!-- Quiz -->
     <section id="quizScreen" class="screen">
       <div class="panel quiz-card">
+
         <header class="quiz-header">
           <div class="quiz-header-row">
             <span id="questionCounter">Questão 1 de 5</span>
             <span class="score-box" id="liveScore">0/6 pontos</span>
           </div>
+
           <div class="progress" aria-label="Progresso do quiz">
             <div class="progress-bar" id="progressBar"></div>
           </div>
@@ -534,22 +573,43 @@
           </div>
 
           <h2 class="question" id="questionText"></h2>
+
           <div class="options" id="optionsContainer"></div>
-          <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+
+          <div
+            id="feedback"
+            class="feedback"
+            role="status"
+            aria-live="polite"
+          ></div>
         </div>
 
         <div class="footer">
-          <button class="btn btn-primary" id="nextBtn" style="display:none;"></button>
+          <button
+            class="btn btn-primary"
+            id="nextBtn"
+            style="display:none;"
+          ></button>
         </div>
+
       </div>
     </section>
 
     <!-- Resultado -->
     <section id="resultScreen" class="screen">
       <div class="panel result">
-        <div class="result-icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></div>
+
+        <div class="result-icon">
+          <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
+        </div>
+
         <h2 id="resultTitle">Resultado</h2>
+
+        <!-- NOME GIGANTE QUANDO GABARITAR -->
+        <div class="winner-name" id="winnerName"></div>
+
         <div class="final-score" id="finalScore">0/6</div>
+
         <p id="resultMessage"></p>
 
         <div class="stats">
@@ -557,6 +617,7 @@
             <strong id="correctCount">0/5</strong>
             <span>questões corretas</span>
           </div>
+
           <div class="stat">
             <strong>6</strong>
             <span>pontuação máxima</span>
@@ -575,6 +636,7 @@
         <div class="subtle" id="playerSummary"></div>
       </div>
     </section>
+
   </main>
 
   <script>
@@ -591,6 +653,7 @@
         points: 1,
         explanation: "A degradação ambiental pode provocar poluição e perda de biodiversidade, afetando o equilíbrio dos ecossistemas."
       },
+
       {
         text: "Ao analisarmos a maquete, qual é um impacto da falta de biodiversidade em uma cidade?",
         options: [
@@ -603,6 +666,7 @@
         points: 1,
         explanation: "A redução da biodiversidade pode desequilibrar os ecossistemas e prejudicar aspectos ambientais importantes, além de reduzir a capacidade local de atrair novas espécies."
       },
+
       {
         text: "Dentre as opções abaixo, qual explica melhor uma das causas da poluição representada em nossa maquete?",
         options: [
@@ -615,18 +679,21 @@
         points: 1,
         explanation: "Combustíveis fósseis, atividades industriais e descarte inadequado de resíduos são, dentre as alternativas acima, as fontes mais viáveis de poluição."
       },
+
       {
         text: `Observe os carros destruídos na maquete. A afirmação a seguir é verdadeira ou falsa?
 
 “Os carros destruídos são resultado apenas de ações da natureza, sem participação humana.”`,
+
         options: [
           "Verdadeiro",
           "Falso"
         ],
         answer: 1,
         points: 1,
-        explanation: "Falso. Os carros <strong>destruídos</strong> na maquete também representam consequências de problemas causados e agravados pela ação humana, principalmente o descarte inadequado."
+        explanation: "Falso. Os carros destruídos na maquete também representam consequências de problemas causados e agravados pela ação humana, principalmente o descarte inadequado."
       },
+
       {
         text: "Ao analisarmos a maquete, vemos um rio poluído. Por que esse rio pode estar poluído dessa forma?",
         options: [
@@ -651,152 +718,286 @@
     const $ = (id) => document.getElementById(id);
 
     function showScreen(id) {
-      document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
-      $(id).classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document
+        .querySelectorAll(".screen")
+        .forEach((screen) => screen.classList.remove("active"));
+
+      $(id).classList.add("active");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     }
 
     function renderQuestion() {
       answered = false;
+
       const q = questions[currentQuestion];
 
-      $("questionCounter").textContent = `Questão ${currentQuestion + 1} de ${questions.length}`;
-      $("liveScore").textContent = `${score}/6 pontos`;
-      $("progressBar").style.width = `${((currentQuestion) / questions.length) * 100}%`;
+      $("questionCounter").textContent =
+        `Questão ${currentQuestion + 1} de ${questions.length}`;
+
+      $("liveScore").textContent =
+        `${score}/6 pontos`;
+
+      $("progressBar").style.width =
+        `${(currentQuestion / questions.length) * 100}%`;
+
       $("questionText").textContent = q.text;
+
       $("feedback").className = "feedback";
       $("feedback").textContent = "";
+
       $("nextBtn").style.display = "none";
 
       const badge = $("difficultyBadge");
+
       badge.classList.toggle("challenge", q.points === 2);
-      badge.innerHTML = q.points === 2
-        ? '<i class="fa-solid fa-crosshairs" aria-hidden="true"></i><span>Questão 5 · 2 pontos</span>'
-        : '<i class="fa-solid fa-star" aria-hidden="true"></i><span>1 ponto</span>';
+
+      badge.innerHTML =
+        q.points === 2
+          ? '<i class="fa-solid fa-crosshairs" aria-hidden="true"></i><span>Questão 5 · 2 pontos</span>'
+          : '<i class="fa-solid fa-star" aria-hidden="true"></i><span>1 ponto</span>';
 
       const letters = ["A", "B", "C", "D"];
       const container = $("optionsContainer");
+
       container.innerHTML = "";
 
       q.options.forEach((option, index) => {
         const button = document.createElement("button");
+
         button.className = "option";
         button.type = "button";
+
         button.innerHTML = `
           <span class="option-letter">${letters[index]}</span>
           <span>${option}</span>
         `;
+
         button.addEventListener("click", () => chooseAnswer(index));
+
         container.appendChild(button);
       });
     }
 
     function chooseAnswer(index) {
       if (answered) return;
+
       answered = true;
 
       const q = questions[currentQuestion];
-      const buttons = [...document.querySelectorAll('.option')];
-      buttons.forEach((button) => button.disabled = true);
+
+      const buttons = [...document.querySelectorAll(".option")];
+
+      buttons.forEach((button) => {
+        button.disabled = true;
+      });
 
       const selected = buttons[index];
       const correct = buttons[q.answer];
+
       const isCorrect = index === q.answer;
 
-      correct.classList.add('correct');
-      if (!isCorrect) selected.classList.add('wrong');
+      correct.classList.add("correct");
+
+      if (!isCorrect) {
+        selected.classList.add("wrong");
+      }
 
       if (isCorrect) {
         score += q.points;
         correctAnswers += 1;
-        history.push({ correct: true });
-        $("feedback").className = 'feedback correct show';
+
+        history.push({
+          correct: true
+        });
+
+        $("feedback").className = "feedback correct show";
+
         $("feedback").innerHTML = `
           <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-          <div><strong>Acertou!</strong> +${q.points} ponto${q.points > 1 ? 's' : ''}</div>
+
+          <div>
+            <strong>Acertou!</strong>
+            +${q.points} ponto${q.points > 1 ? "s" : ""}
+          </div>
         `;
+
       } else {
-        history.push({ correct: false });
-        $("feedback").className = 'feedback wrong show';
+
+        history.push({
+          correct: false
+        });
+
+        $("feedback").className = "feedback wrong show";
+
+        /*
+          AGORA MOSTRA:
+          1. que errou
+          2. qual era a resposta certa
+          3. a explicação da questão
+        */
         $("feedback").innerHTML = `
           <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
-          <div><strong>Essa não.</strong> A resposta certa é <strong>${q.options[q.answer]}</strong></div>
+
+          <div>
+            <strong>Essa não.</strong>
+
+            A resposta certa é
+            <strong>${q.options[q.answer]}</strong>
+
+            <br><br>
+
+            <strong>Explicação:</strong>
+            ${q.explanation}
+          </div>
         `;
       }
 
-      $("liveScore").textContent = `${score}/6 pontos`;
-      $("progressBar").style.width = `${((currentQuestion + 1) / questions.length) * 100}%`;
-      $("nextBtn").style.display = 'inline-flex';
-      $("nextBtn").innerHTML = currentQuestion === questions.length - 1
-        ? '<i class="fa-solid fa-chart-column" aria-hidden="true"></i> Ver resultado'
-        : '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Próxima questão';
+      $("liveScore").textContent =
+        `${score}/6 pontos`;
+
+      $("progressBar").style.width =
+        `${((currentQuestion + 1) / questions.length) * 100}%`;
+
+      $("nextBtn").style.display = "inline-flex";
+
+      $("nextBtn").innerHTML =
+        currentQuestion === questions.length - 1
+          ? '<i class="fa-solid fa-chart-column" aria-hidden="true"></i> Ver resultado'
+          : '<i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Próxima questão';
     }
 
     function finishQuiz() {
-      $("finalScore").textContent = `${score}/6`;
-      $("correctCount").textContent = `${correctAnswers}/5`;
+      $("finalScore").textContent =
+        `${score}/6`;
 
-      let title = 'Resultado final';
-      let message = 'Veja quantos pontos você fez e confira as questões que respondeu.';
+      $("correctCount").textContent =
+        `${correctAnswers}/5`;
+
+      let title = "Resultado final";
+
+      let message =
+        "Veja quantos pontos você fez e confira as questões que respondeu.";
 
       if (score === 6) {
-        title = 'Mandou bem!';
-        message = 'Você acertou tudo e gabaritou o quiz com 6/6 pontos.';
+        title = "Mandou bem!";
+
+        message =
+          "Você acertou tudo e gabaritou o quiz com 6/6 pontos.";
+
       } else if (score >= 4) {
-        title = 'Bom trabalho!';
-        message = 'Você foi bem e acertou a maior parte das questões.';
+
+        title = "Bom trabalho!";
+
+        message =
+          "Você foi bem e acertou a maior parte das questões.";
+
       } else if (score >= 2) {
-        title = 'Quiz concluído';
-        message = 'Você acertou uma parte das questões.';
+
+        title = "Quiz concluído";
+
+        message =
+          "Você acertou uma parte das questões.";
       }
 
       $("resultTitle").textContent = title;
+
       $("resultMessage").textContent = message;
-      $("playerSummary").textContent = playerName ? `Participante: ${playerName}` : '';
 
-      $("review").innerHTML = history.map((item, index) => {
-        const q = questions[index];
-        return `
-          <div class="review-row">
-            <span class="review-status ${item.correct ? 'ok' : 'no'}">
-              <i class="fa-solid ${item.correct ? 'fa-check' : 'fa-xmark'}" aria-hidden="true"></i>
-              Questão ${index + 1}
-            </span>
-            <span class="review-points">${item.correct ? q.points : 0}/${q.points} ponto${q.points > 1 ? 's' : ''}</span>
-          </div>
-        `;
-      }).join('');
+      $("playerSummary").textContent =
+        playerName
+          ? `Participante: ${playerName}`
+          : "";
 
-      showScreen('resultScreen');
+      /*
+        NOME GIGANTE:
+        Só aparece quando a pessoa fizer 6/6.
+      */
+      if (score === 6 && playerName) {
+
+        $("winnerName").textContent =
+          `Mandou bem, ${playerName}!`;
+
+      } else {
+
+        $("winnerName").textContent = "";
+      }
+
+      $("review").innerHTML = history
+        .map((item, index) => {
+
+          const q = questions[index];
+
+          return `
+            <div class="review-row">
+
+              <span class="review-status ${item.correct ? "ok" : "no"}">
+
+                <i
+                  class="fa-solid ${item.correct ? "fa-check" : "fa-xmark"}"
+                  aria-hidden="true"
+                ></i>
+
+                Questão ${index + 1}
+
+              </span>
+
+              <span class="review-points">
+                ${item.correct ? q.points : 0}/${q.points}
+                ponto${q.points > 1 ? "s" : ""}
+              </span>
+
+            </div>
+          `;
+        })
+        .join("");
+
+      showScreen("resultScreen");
     }
 
     function startQuiz() {
-      playerName = $("playerName").value.trim();
+      playerName =
+        $("playerName").value.trim();
+
       currentQuestion = 0;
       score = 0;
       correctAnswers = 0;
       history = [];
-      showScreen('quizScreen');
+
+      showScreen("quizScreen");
+
       renderQuestion();
     }
 
-    $("startBtn").addEventListener('click', startQuiz);
-    $("playerName").addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') startQuiz();
+    $("startBtn").addEventListener("click", startQuiz);
+
+    $("playerName").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        startQuiz();
+      }
     });
 
-    $("nextBtn").addEventListener('click', () => {
+    $("nextBtn").addEventListener("click", () => {
+
       if (currentQuestion < questions.length - 1) {
+
         currentQuestion += 1;
+
         renderQuestion();
+
       } else {
+
         finishQuiz();
       }
     });
 
-    $("restartBtn").addEventListener('click', () => {
-      showScreen('startScreen');
+    $("restartBtn").addEventListener("click", () => {
+      showScreen("startScreen");
     });
+
   </script>
 </body>
 </html>
